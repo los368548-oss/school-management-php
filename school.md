@@ -82,8 +82,24 @@ Create an Admin Panel for a school management system with the following pages: D
 - **Account Settings**: Manage personal preferences and account security with password change functionality and locked personal data protection.
 
 ### 📝 Form Specifications
-
 #### Student Registration Form
+
+### Student Admission Workflow
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Enter Student Details]
+    B --> C[Validate Required Fields]
+    C --> D{Valid?}
+    D -->|No| E[Show Errors]
+    E --> B
+    D -->|Yes| F[Upload Photo]
+    F --> G[Save to Database]
+    G --> H[Generate Scholar Number]
+    H --> I[Success Message]
+    I --> J[End]
+```
+
 **Required Fields:**
 - Scholar Number, Admission Number, Admission Date, Full Name (first, middle, last), Class & Section (dropdown)
 - Father's Name, Mother's Name, Guardian's Name & Contact Number, Date of Birth, Gender
@@ -93,8 +109,20 @@ Create an Admin Panel for a school management system with the following pages: D
 
 **Features**: Mandatory field validation, MySQL storage, responsive design (Tailwind + Bootstrap), Save/Reset buttons
 
-
 #### Fee Collection Form
+
+### Fee Collection Workflow
+
+```mermaid
+flowchart TD
+    A[Select Class/Village] --> B[Filter Students]
+    B --> C[Enter Fee Details]
+    C --> D[Calculate Total]
+    D --> E[Select Payment Mode]
+    E --> F[Generate Receipt]
+    F --> G[Update Database]
+```
+
 **Features:**
 - Class and Village filtering with dynamic student population
 - Fee Details: Total Fee, Fee Type, optional Discount/Scholarship, Receipt Number
@@ -134,8 +162,21 @@ Create an Admin Panel for a school management system with the following pages: D
 - Print/export functionality (PDF/Excel)
 - Field validation and AJAX operations
 - Responsive design implementation
-
 #### Complete Examination Module
+
+### Exam Management Workflow
+
+```mermaid
+flowchart TD
+    A[Admin] --> B[Create Exam]
+    B --> C[Set Exam Details]
+    C --> D[Add Subjects & Schedule]
+    D --> E[Generate Admit Cards]
+    E --> F[Conduct Exam]
+    F --> G[Enter Results]
+    G --> H[Generate Report Cards]
+```
+
 **Components:**
 1. **Exam Setup Page**: Create/manage examinations with Exam Name, Type, Class/Section, Start/End Date fields
 2. **Subject Schedule Management**: Define exam subjects with dates and timings (Add/Edit/Delete operations)
@@ -188,6 +229,26 @@ Create an Admin Panel for a school management system with the following pages: D
 - Backup and migration support procedures
 
 ## 🏗️ System Architecture
+
+### High-Level System Architecture
+
+The following diagram illustrates the high-level architecture of the School Management System:
+
+```mermaid
+graph TD
+    A[User] --> B[Browser]
+    B --> C[Web Server<br/>Apache/Nginx]
+    C --> D[PHP Application]
+    D --> E[MVC Framework]
+    E --> F[Controllers]
+    E --> G[Models]
+    E --> H[Views]
+    G --> I[MySQL Database]
+    H --> J[HTML/CSS/JS<br/>Response]
+    J --> B
+    D --> K[API Layer]
+    K --> L[External Systems<br/>Mobile Apps, etc.]
+```
 
 ### MVC Architecture
 The system follows the Model-View-Controller (MVC) pattern for clean separation of concerns:
@@ -254,6 +315,26 @@ The system follows the Model-View-Controller (MVC) pattern for clean separation 
 - **Custom Reports**: Filterable reports with PDF/Excel export
 
 ## 🗄️ Database Design
+
+### Database Schema Overview
+
+```mermaid
+erDiagram
+    USERS ||--o{ STUDENTS : manages
+    USERS ||--o{ ATTENDANCE : records
+    STUDENTS ||--o{ ATTENDANCE : has
+    STUDENTS ||--o{ EXAM_RESULTS : has
+    EXAMS ||--o{ EXAM_RESULTS : produces
+    STUDENTS ||--o{ FEE_PAYMENTS : makes
+    FEES ||--o{ FEE_PAYMENTS : defines
+    CLASSES ||--o{ STUDENTS : contains
+    CLASSES ||--o{ CLASS_SUBJECTS : has
+    SUBJECTS ||--o{ CLASS_SUBJECTS : assigned
+    SUBJECTS ||--o{ EXAM_RESULTS : for
+    EVENTS ||--o{ GALLERY : has
+    NEWS ||--o{ EVENTS : related
+    SETTINGS ||--o{ USERS : configures
+```
 
 ### Core Tables
 - `users` - User accounts and authentication data
@@ -356,10 +437,115 @@ school-management/
 │
 ├── 🔧 Application Core (MVC Architecture)
 │   ├── controllers/     # Request handlers
-│   │   ├── AdminController.php
-│   │   ├── StudentController.php
+│   │   ├── admin/
+│   │   │   ├── DashboardController.php
+│   │   │   ├── StudentController.php
+│   │   │   ├── ClassController.php
+│   │   │   ├── AttendanceController.php
+│   │   │   ├── ExamController.php
+│   │   │   ├── FeeController.php
+│   │   │   ├── EventController.php
+│   │   │   ├── GalleryController.php
+│   │   │   ├── ReportController.php
+│   │   │   └── SettingController.php
+│   │   ├── student/
+│   │   │   ├── DashboardController.php
+│   │   │   ├── AttendanceController.php
+│   │   │   ├── ResultController.php
+│   │   │   ├── FeeController.php
+│   │   │   ├── ProfileController.php
+│   │   │   └── EventController.php
+│   │   ├── public/
+│   │   │   └── HomeController.php
 │   │   ├── AuthController.php
 │   │   └── ApiController.php
+│   ├── models/         # Data layer
+│   │   ├── user/
+│   │   │   └── User.php
+│   │   ├── student/
+│   │   │   └── Student.php
+│   │   ├── class/
+│   │   │   └── Class.php
+│   │   ├── subject/
+│   │   │   └── Subject.php
+│   │   ├── attendance/
+│   │   │   └── Attendance.php
+│   │   ├── exam/
+│   │   │   └── Exam.php
+│   │   ├── result/
+│   │   │   └── Result.php
+│   │   ├── fee/
+│   │   │   └── Fee.php
+│   │   ├── event/
+│   │   │   └── Event.php
+│   │   ├── gallery/
+│   │   │   └── Gallery.php
+│   │   ├── report/
+│   │   │   └── Report.php
+│   │   └── setting/
+│       └── Setting.php
+│   ├── views/          # Presentation layer
+│   │   ├── admin/
+│   │   │   ├── dashboard/
+│   │   │   │   └── index.php
+│   │   │   ├── students/
+│   │   │   │   ├── index.php
+│   │   │   │   ├── add.php
+│   │   │   │   ├── edit.php
+│   │   │   │   └── view.php
+│   │   │   ├── classes/
+│   │   │   │   ├── index.php
+│   │   │   │   ├── add.php
+│   │   │   │   └── edit.php
+│   │   │   ├── attendance/
+│   │   │   │   ├── index.php
+│   │   │   │   ├── mark.php
+│   │   │   │   └── report.php
+│   │   │   ├── exams/
+│   │   │   │   ├── index.php
+│   │   │   │   ├── add.php
+│   │   │   │   └── results.php
+│   │   │   ├── fees/
+│   │   │   │   ├── index.php
+│   │   │   │   ├── collect.php
+│   │   │   │   └── report.php
+│   │   │   ├── events/
+│   │   │   │   ├── index.php
+│   │   │   │   ├── add.php
+│   │   │   │   └── edit.php
+│   │   │   ├── gallery/
+│   │   │   │   ├── index.php
+│   │   │   │   └── upload.php
+│   │   │   ├── reports/
+│   │   │   │   ├── index.php
+│   │   │   │   └── generate.php
+│   │   │   └── settings/
+│   │       ├── index.php
+│   │       ├── users.php
+│   │       └── permissions.php
+│   │   ├── student/
+│   │   │   ├── dashboard/
+│   │   │   │   └── index.php
+│   │   │   ├── attendance/
+│   │   │   │   └── index.php
+│   │   │   ├── results/
+│   │   │   │   └── index.php
+│   │   │   ├── fees/
+│   │   │   │   └── index.php
+│   │   │   ├── profile/
+│   │   │   │   ├── index.php
+│   │   │   │   └── edit.php
+│   │   │   └── events/
+│   │       └── index.php
+│   │   └── public/
+│       └── homepage/
+│           ├── index.php
+│           ├── about.php
+│           ├── courses.php
+│           ├── events.php
+│           ├── gallery.php
+│           ├── contact.php
+│           └── admission.php
 │   ├── core/           # Framework foundation
 │   │   ├── Database.php     # Database abstraction
 │   │   ├── Router.php        # URL routing
@@ -367,12 +553,6 @@ school-management/
 │   │   ├── Session.php       # Session management
 │   │   └── Validator.php     # Input validation
 │   ├── middleware/     # Security & routing
-│   ├── models/         # Data layer
-│   │   ├── User.php         # User management
-│   │   ├── Student.php       # Student operations
-│   │   ├── Fee.php           # Fee management
-│   │   ├── Exam.php          # Examination system
-│   │   └── Attendance.php    # Attendance tracking
 │   ├── config/          # System configuration
 │   │   ├── database.php          # Database settings
 │   │   ├── app.php              # Application config
@@ -411,13 +591,33 @@ school-management/
 │   ├── api/                    # RESTful API endpoints
 │   │   ├── v1/                 # API version 1
 │   │   │   ├── auth/           # Authentication endpoints
+│   │   │   │   ├── login.php
+│   │   │   │   ├── logout.php
+│   │   │   │   └── token.php
 │   │   │   ├── students/       # Student data API
+│   │   │   │   ├── index.php
+│   │   │   │   ├── create.php
+│   │   │   │   ├── update.php
+│   │   │   │   ├── delete.php
+│   │   │   │   └── show.php
 │   │   │   ├── fees/           # Fee management API
+│   │   │   │   ├── index.php
+│   │   │   │   ├── payment.php
+│   │   │   │   └── report.php
 │   │   │   ├── exams/          # Examination API
+│   │   │   │   ├── index.php
+│   │   │   │   ├── results.php
+│   │   │   │   └── schedule.php
 │   │   │   └── reports/        # Reporting API
+│   │   │       ├── index.php
+│   │   │       ├── export.php
+│   │   │       └── analytics.php
 │   │   └── docs/               # API documentation
+│   │       └── index.php
 │   ├── webhook/                # Webhook handlers
+│   │   └── handler.php
 │   └── sync/                   # Data synchronization
+    └── sync.php
 │
 ├── 🔍 Documentation & Testing
 │   ├── docs/
@@ -449,9 +649,9 @@ school-management/
 #### Application Core Files
 | Component | Primary Files | Responsibility |
 |-----------|---------------|----------------|
-| **Controllers** | [`AdminController.php`](controllers/AdminController.php), [`StudentController.php`](controllers/StudentController.php), [`AuthController.php`](controllers/AuthController.php), [`ApiController.php`](controllers/ApiController.php) | Request handling and business logic |
-| **Models** | [`User.php`](models/User.php), [`Student.php`](models/Student.php), [`Fee.php`](models/Fee.php), [`Exam.php`](models/Exam.php), [`Attendance.php`](models/Attendance.php) | Data operations and database interaction |
-| **Views** | [`admin/dashboard`](admin/dashboard/), [`admin/students`](admin/students/), [`admin/classes`](admin/classes/), [`admin/attendance`](admin/attendance/), [`admin/exams`](admin/exams/), [`admin/fees`](admin/fees/), [`admin/events`](admin/events/), [`admin/gallery`](admin/gallery/), [`admin/reports`](admin/reports/), [`admin/settings`](admin/settings/), [`student/dashboard`](student/dashboard/), [`student/attendance`](student/attendance/), [`student/results`](student/results/), [`student/fees`](student/fees/), [`student/profile`](student/profile/), [`public/homepage`](public/homepage/) | Presentation and user interface |
+| **Controllers** | [`controllers/admin/DashboardController.php`](controllers/admin/DashboardController.php), [`controllers/admin/StudentController.php`](controllers/admin/StudentController.php), [`controllers/student/DashboardController.php`](controllers/student/DashboardController.php), [`controllers/AuthController.php`](controllers/AuthController.php), [`controllers/ApiController.php`](controllers/ApiController.php) | Request handling and business logic |
+| **Models** | [`models/user/User.php`](models/user/User.php), [`models/student/Student.php`](models/student/Student.php), [`models/fee/Fee.php`](models/fee/Fee.php), [`models/exam/Exam.php`](models/exam/Exam.php), [`models/attendance/Attendance.php`](models/attendance/Attendance.php) | Data operations and database interaction |
+| **Views** | [`views/admin/dashboard/`](views/admin/dashboard/), [`views/admin/students/`](views/admin/students/), [`views/admin/classes/`](views/admin/classes/), [`views/admin/attendance/`](views/admin/attendance/), [`views/admin/exams/`](views/admin/exams/), [`views/admin/fees/`](views/admin/fees/), [`views/admin/events/`](views/admin/events/), [`views/admin/gallery/`](views/admin/gallery/), [`views/admin/reports/`](views/admin/reports/), [`views/admin/settings/`](views/admin/settings/), [`views/student/dashboard/`](views/student/dashboard/), [`views/student/attendance/`](views/student/attendance/), [`views/student/results/`](views/student/results/), [`views/student/fees/`](views/student/fees/), [`views/student/profile/`](views/student/profile/), [`views/public/homepage/`](views/public/homepage/) | Presentation and user interface |
 | **Core** | [`Database.php`](core/Database.php), [`Router.php`](core/Router.php), [`Security.php`](core/Security.php), [`Session.php`](core/Session.php), [`Validator.php`](core/Validator.php) | Framework foundation |
 | **Config** | [`database.php`](config/database.php), [`app.php`](config/app.php), [`security.php`](config/security.php), [`email.php`](config/email.php), [`upload.php`](config/upload.php) | System configuration |
 | **Middleware** | [`Auth.php`](middleware/Auth.php), [`Security.php`](middleware/Security.php), [`RoleCheck.php`](middleware/RoleCheck.php) | Request processing and security |
