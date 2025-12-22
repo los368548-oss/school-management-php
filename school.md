@@ -8,11 +8,12 @@ The School Management System is a comprehensive web-based application designed t
 
 ### Key Features
 - **Multi-Role Support**: Separate dashboards for Admin and Student roles
-- **Complete Academic Management**: Student enrollment, class management, attendance, examinations, and promotion system
+- **Complete Academic Management**: Student enrollment, class management, attendance, examinations, promotion system, and timetable management
 - **Document Generation**: Automated generation of Transfer Certificates, marksheets, and admit cards with integrated print system
 - **Financial Management**: Fee collection, payment tracking, and financial reporting
 - **Content Management**: Dynamic website with news, events, and gallery management
 - **Reporting System**: Comprehensive reports with PDF/Excel export capabilities
+- **Timetable Management**: Automated class scheduling, conflict resolution, teacher availability tracking, and integration with attendance and exam systems
 
 ### Technology Stack
 - **Backend**: PHP 8.1+ with MVC architecture
@@ -67,6 +68,44 @@ Create an Admin Panel for a school management system with the following pages: D
 - **Analytics & Reporting**: Comprehensive reports with customizable date ranges, PDF/Excel export, and data analysis for auditing and planning.
 
 - **System Configuration**: School information updates, user account management, permission control, and system settings with backup/restore options.
+
+#### Timetable Management System
+
+**Features:**
+- Automated class scheduling with drag-and-drop interface
+- Conflict resolution for overlapping classes or teacher assignments
+- Teacher availability tracking and workload balancing
+- Integration with attendance marking and exam scheduling
+- Printable timetables with PDF export
+- Real-time updates and notifications for schedule changes
+- Customizable time slots and break periods
+- Mobile-responsive design for on-the-go access
+
+**Workflow:**
+
+```mermaid
+flowchart TD
+    A[Admin Access Timetable Module] --> B[Select Class/Section]
+    B --> C[View Current Schedule]
+    C --> D{Edit Schedule?}
+    D -->|Yes| E[Add/Edit Subject Slots]
+    E --> F[Check Conflicts]
+    F --> G{Conflicts Found?}
+    G -->|Yes| H[Resolve Conflicts]
+    H --> E
+    G -->|No| I[Save Schedule]
+    I --> J[Notify Affected Users]
+    J --> K[Generate Reports]
+    D -->|No| L[Export/Print Timetable]
+    L --> M[End]
+```
+
+**Components:**
+1. **Schedule Builder**: Interactive grid for creating weekly/monthly timetables
+2. **Conflict Detector**: Automatic identification of scheduling conflicts
+3. **Teacher Dashboard**: Personal schedule view with availability settings
+4. **Student Portal**: Class timetable access with notifications
+5. **Admin Controls**: Bulk operations, template management, and audit logs
 
 #### Student Portal Features
 - **Academic Dashboard**: Personal academic snapshot showing attendance percentage, exam results, upcoming events, and fee status with relevant notifications.
@@ -447,7 +486,8 @@ school-management/
 │   │   │   ├── EventController.php
 │   │   │   ├── GalleryController.php
 │   │   │   ├── ReportController.php
-│   │   │   └── SettingController.php
+│   │   │   ├── SettingController.php
+│   │   │   └── TimetableController.php
 │   │   ├── student/
 │   │   │   ├── DashboardController.php
 │   │   │   ├── AttendanceController.php
@@ -484,6 +524,8 @@ school-management/
 │   │   │   └── Report.php
 │   │   └── setting/
 │       └── Setting.php
+│   │   └── timetable/
+│       └── Timetable.php
 │   ├── views/          # Presentation layer
 │   │   ├── admin/
 │   │   │   ├── dashboard/
@@ -523,6 +565,10 @@ school-management/
 │   │       ├── index.php
 │   │       ├── users.php
 │   │       └── permissions.php
+│   │   │   └── timetable/
+│   │       ├── index.php
+│   │       ├── create.php
+│   │       └── edit.php
 │   │   ├── student/
 │   │   │   ├── dashboard/
 │   │   │   │   └── index.php
@@ -536,6 +582,8 @@ school-management/
 │   │   │   │   ├── index.php
 │   │   │   │   └── edit.php
 │   │   │   └── events/
+│   │       └── index.php
+│   │   │   └── timetable/
 │   │       └── index.php
 │   │   └── public/
 │       └── homepage/
@@ -651,7 +699,7 @@ school-management/
 |-----------|---------------|----------------|
 | **Controllers** | [`controllers/admin/DashboardController.php`](controllers/admin/DashboardController.php), [`controllers/admin/StudentController.php`](controllers/admin/StudentController.php), [`controllers/student/DashboardController.php`](controllers/student/DashboardController.php), [`controllers/AuthController.php`](controllers/AuthController.php), [`controllers/ApiController.php`](controllers/ApiController.php) | Request handling and business logic |
 | **Models** | [`models/user/User.php`](models/user/User.php), [`models/student/Student.php`](models/student/Student.php), [`models/fee/Fee.php`](models/fee/Fee.php), [`models/exam/Exam.php`](models/exam/Exam.php), [`models/attendance/Attendance.php`](models/attendance/Attendance.php) | Data operations and database interaction |
-| **Views** | [`views/admin/dashboard/`](views/admin/dashboard/), [`views/admin/students/`](views/admin/students/), [`views/admin/classes/`](views/admin/classes/), [`views/admin/attendance/`](views/admin/attendance/), [`views/admin/exams/`](views/admin/exams/), [`views/admin/fees/`](views/admin/fees/), [`views/admin/events/`](views/admin/events/), [`views/admin/gallery/`](views/admin/gallery/), [`views/admin/reports/`](views/admin/reports/), [`views/admin/settings/`](views/admin/settings/), [`views/student/dashboard/`](views/student/dashboard/), [`views/student/attendance/`](views/student/attendance/), [`views/student/results/`](views/student/results/), [`views/student/fees/`](views/student/fees/), [`views/student/profile/`](views/student/profile/), [`views/public/homepage/`](views/public/homepage/) | Presentation and user interface |
+| **Views** | [`views/admin/dashboard/`](views/admin/dashboard/), [`views/admin/students/`](views/admin/students/), [`views/admin/classes/`](views/admin/classes/), [`views/admin/attendance/`](views/admin/attendance/), [`views/admin/exams/`](views/admin/exams/), [`views/admin/fees/`](views/admin/fees/), [`views/admin/events/`](views/admin/events/), [`views/admin/gallery/`](views/admin/gallery/), [`views/admin/reports/`](views/admin/reports/), [`views/admin/settings/`](views/admin/settings/), [`views/admin/timetable/`](views/admin/timetable/), [`views/student/dashboard/`](views/student/dashboard/), [`views/student/attendance/`](views/student/attendance/), [`views/student/results/`](views/student/results/), [`views/student/fees/`](views/student/fees/), [`views/student/profile/`](views/student/profile/), [`views/student/timetable/`](views/student/timetable/), [`views/public/homepage/`](views/public/homepage/) | Presentation and user interface |
 | **Core** | [`Database.php`](core/Database.php), [`Router.php`](core/Router.php), [`Security.php`](core/Security.php), [`Session.php`](core/Session.php), [`Validator.php`](core/Validator.php) | Framework foundation |
 | **Config** | [`database.php`](config/database.php), [`app.php`](config/app.php), [`security.php`](config/security.php), [`email.php`](config/email.php), [`upload.php`](config/upload.php) | System configuration |
 | **Middleware** | [`Auth.php`](middleware/Auth.php), [`Security.php`](middleware/Security.php), [`RoleCheck.php`](middleware/RoleCheck.php) | Request processing and security |
